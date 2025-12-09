@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MASLD Probability Calculator</title>
+<style>
+  :root { --bg:#f7f7fb; --card:#ffffff; --text:#111827; --muted:#6b7280; --accent:#4f46e5; --border:#e5e7eb; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji}
+  .wrap{max-width:880px;margin:32px auto;padding:16px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 10px 25px rgba(2,6,23,.06);padding:24px}
+  h1{margin:0 0 8px;font-size:28px}
+  p.sub{margin:0 0 16px;color:var(--muted)}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(1,minmax(0,1fr))}
+  @media (min-width:720px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  label{font-size:14px;font-weight:600}
+  input, select{width:100%;margin-top:6px;padding:10px 12px;border:1px solid var(--border);border-radius:12px;font-size:14px;outline:none}
+  input:focus, select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+  .row{display:flex;gap:16px;flex-wrap:wrap;margin-top:18px}
+  .pill{flex:1;min-width:200px;background:#f9fafb;border:1px solid var(--border);border-radius:12px;padding:14px}
+  .pill .k{font-size:12px;color:var(--muted)}
+  .pill .v{margin-top:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:20px;font-weight:700}
+  .btn{display:inline-block;padding:10px 14px;border:1px solid var(--border);border-radius:12px;background:#fff;cursor:pointer}
+  .btn:hover{background:#f9fafb}
+  .muted{color:var(--muted);font-size:12px}
+  .foot{margin-top:18px;color:var(--muted);font-size:12px;line-height:1.6}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>MASLD Probability Calculator</h1>
+      <p class="sub">
+        Probability (MASLD) = 1 / (1 + exp(-y))<br/>
+        where y = -14.743 + 0.083×Age − 2.167×Sex + 0.319×BMI + 0.020×MBP + 0.111×PBF + 0.010×SMI
+      </p>
+
+      <div class="grid">
+        <div>
+          <label>Age (years)</label>
+          <input type="number" id="age" value="30" min="10" max="100" step="1" />
+        </div>
+        <div>
+          <label>Sex (1 = Male, 2 = Female)</label>
+          <select id="sex">
+            <option value="1" selected>1 (Male)</option>
+            <option value="2">2 (Female)</option>
+          </select>
+        </div>
+        <div>
+          <label>Body Mass Index (kg/m²)</label>
+          <input type="number" id="bmi" value="24" min="10" max="60" step="0.1" />
+        </div>
+        <div>
+          <label>Mean Blood Pressure (mmHg)</label>
+          <input type="number" id="mbp" value="90" min="50" max="140" step="1" />
+        </div>
+        <div>
+          <label>Percentage of Body Fat (%)</label>
+          <input type="number" id="pbf" value="25" min="1" max="70" step="0.1" />
+        </div>
+        <div>
+          <label>Skeletal Muscle Mass Index</label>
+          <input type="number" id="smi" value="7" min="2" max="15" step="0.1" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="pill">
+          <div class="k">Linear predictor (y)</div>
+          <div class="v" id="yval">-</div>
+        </div>
+        <div class="pill">
+          <div class="k">Predicted probability</div>
+          <div class="v" id="pval">-</div>
+        </div>
+        <div class="pill" style="display:flex;align-items:center;justify-content:center">
+          <button class="btn" id="reset">Reset to defaults</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+function compute() {
+  const age = parseFloat(document.getElementById('age').value);
+  const sex = parseFloat(document.getElementById('sex').value);
+  const bmi = parseFloat(document.getElementById('bmi').value);
+  const mbp = parseFloat(document.getElementById('mbp').value);
+  const pbf = parseFloat(document.getElementById('pbf').value);
+  const smi = parseFloat(document.getElementById('smi').value);
+
+  const y = -14.743 + 0.083*age - 2.167*sex + 0.319*bmi + 0.020*mbp + 0.111*pbf + 0.010*smi;
+  const p = 1 / (1 + Math.exp(-y));
+
+  document.getElementById('yval').textContent = isFinite(y) ? y.toFixed(4) : '-';
+  document.getElementById('pval').textContent = isFinite(p) ? (p*100).toFixed(2) + '%' : '-';
+}
+
+['age','sex','bmi','mbp','pbf','smi'].forEach(id => {
+  document.getElementById(id).addEventListener('input', compute);
+  document.getElementById(id).addEventListener('change', compute);
+});
+
+document.getElementById('reset').addEventListener('click', () => {
+  document.getElementById('age').value = 30;
+  document.getElementById('sex').value = '1';
+  document.getElementById('bmi').value = 24;
+  document.getElementById('mbp').value = 90;
+  document.getElementById('pbf').value = 25;
+  document.getElementById('smi').value = 7;
+  compute();
+});
+
+compute();
+</script>
+</body>
+</html>
